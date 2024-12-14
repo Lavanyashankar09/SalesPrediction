@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Forest Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        h2 {
+            text-align: center;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h2>Random Forest Model Prediction</h2>
+    <div class="container">
+        <form id="predictionForm">
+            <div class="form-group">
+                <label for="item_weight">Item Weight</label>
+                <input type="number" id="item_weight" name="Item_Weight" required>
+            </div>
+            <div class="form-group">
+                <label for="item_fat_content">Item Fat Content</label>
+                <input type="number" id="item_fat_content" name="Item_Fat_Content" required>
+            </div>
+            <div class="form-group">
+                <label for="item_visibility">Item Visibility</label>
+                <input type="number" id="item_visibility" name="Item_Visibility" required>
+            </div>
+            <div class="form-group">
+                <label for="item_mrp">Item MRP</label>
+                <input type="number" id="item_mrp" name="Item_MRP" required>
+            </div>
+            <div class="form-group">
+                <label for="outlet_size">Outlet Size</label>
+                <input type="number" id="outlet_size" name="Outlet_Size" required>
+            </div>
+            <div class="form-group">
+                <label for="outlet_location_type">Outlet Location Type</label>
+                <input type="number" id="outlet_location_type" name="Outlet_Location_Type" required>
+            </div>
+            <div class="form-group">
+                <label for="outlet_type">Outlet Type</label>
+                <input type="number" id="outlet_type" name="Outlet_Type" required>
+            </div>
+            <div class="form-group">
+                <label for="outlet_age">Outlet Age</label>
+                <input type="number" id="outlet_age" name="Outlet_Age" required>
+            </div>
+            <div class="form-group">
+                <label for="item_type_encoded">Item Type Encoded</label>
+                <input type="number" id="item_type_encoded" name="Item_Type_Encoded" required>
+            </div>
+            <div class="form-group">
+                <label for="item_identifier_categories_encoded">Item Identifier Categories Encoded</label>
+                <input type="number" id="item_identifier_categories_encoded" name="Item_Identifier_Categories_Encoded" required>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            // Gather form data
+            const formData = new FormData(e.target);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            try {
+                // Send POST request to Flask API
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    // Display prediction result
+                    document.getElementById('result').textContent = `Prediction: ${result.prediction}`;
+                } else {
+                    // Handle errors
+                    document.getElementById('result').textContent = `Error: ${result.error}`;
+                }
+            } catch (error) {
+                document.getElementById('result').textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
